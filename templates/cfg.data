@@ -1,0 +1,75 @@
+[
+  # Organization variables
+       "Global Village" = {
+                                 # Each different type of organization will be
+                                 # defined by a type.
+          "organization-type"    = "organization",
+          "organization-room"    = "null"
+          "organization-street"  = "12 Phylis St.", 
+          "organization-suburb"  = "null", 
+          "organization-city"    = "Ottawa",
+          "organization-state"   = "On.",
+          "organization-country  = "Canada",
+          "organization-phone"   = "613-800-1784",
+          "organization-email"   = "orgadmin@globalvillage.tz",
+          "organization-website" = "https://globalvillage.tz",
+                                   # A list of users allowed to change the
+                                   # the values of variables in this group, to
+                                   # add new variables and to delete variables
+          "organization-admins"  = ["1"]
+          "use-logging"          = "true"
+        } 
+  # Site variables
+    "Dummy Site 1" {
+        "group"            = "Dummy Site 1",
+                                 # Use organization-room keyword value if it exists - defaults to null
+                                 # If nothing specified for default - defaults to null
+        "site-room"            = "%organization-room % null",
+        "site-street"          = "%organization-street",
+        "site-city"            = "%organization-city % null",
+        "site-state"           = "%organization-state",
+        "site-country"         = "%organization-country",
+        "site-phone"           = "%organization-phone"
+                                 # Dummy site emails will be forwarded to the organization-email if it exists
+                                 # otherwise they will be bounced
+        "site-email"           = "dummysite1admin@globalvillage.tz",
+        "site-website"         = "%organization-website",
+        "use-logging           = "%use-logging % true"
+    }
+  ],
+  [  # User variables
+    {
+                                 # List with first name first, last name last
+                                 # and middle names in the middle
+                                 # A computer should use it's
+                                 # fully qualified domain name here
+                                 # It does not need to be a list
+      "user-name"              = ["Jonathan", "Frederick", "Milne", "Gossage],
+                                 # Chooses one of "male", "female" or "computer"
+      "user-sex"               = ["male", "female", "computer"],
+                                 # Other values can be used as this area is not
+                                 # yet stabilized from the viewpoint of vocabulary
+      "user-gender"            = ["agender", "bigender", "cisgender"],
+                                 # One honorifics or more can be used.
+                                 # The first four are derived from other data
+                                 # such as sex, age and narital status and will
+                                 # be inserted automatically.
+                                 # They need not be specifically specified.
+                                 # The last three must be explicitly stated.
+                                 # When the program becomes language and locale sensitive,
+                                 # language and locale sensitive values will be used
+      "user-honorific"         = ["Mr.". "Mrs.", "Ms.", "Master", "Dr.",
+                                  "Reverand", "Honorable" ],
+                                 # The name that a computer recognizes the user as
+      "userid"                 = "jonathan",
+                                 # A user specific identification number normally
+                                 # supplied by an organization. This can be
+                                 # anything you want, but should be created, even
+                                 # for a one person organization. The values
+                                 # should be unique within an organization since
+                                 # this is how users are identified to other
+                                 # parts of the configuration subsystem.
+      "userident"              = "1",
+    }
+  ]
+]
