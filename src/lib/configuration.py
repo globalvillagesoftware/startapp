@@ -55,7 +55,7 @@ system:
     * team_developer|br| 
       This list of entries defines the team that developed
 """
-#TODO: Complete documentation of the configuration process
+#TODO: Complete documentation of the configuration process - Issue #1
 
 import importlib
 
@@ -179,7 +179,7 @@ class ArgDescriptor(object):
     def __init__(self):
         return
 
-#TODO: Update configuration.py with keys from cfg.data
+#TODO: Update configuration.py with key names from cfg.data
 
 class CfgEntry(object):
     """
@@ -187,7 +187,7 @@ class CfgEntry(object):
     """
 
 #TODO: Expand definition to include variable definition for Arguments
-#TODO: Make a class entry for CfgRntry be the element of the configuration
+#TODO: Make a class entry for CfgEntry be the element of the configuration
     def __init__(self, cfg, key, value, ad=None, admin=None):
         """
         :param dict cfg          The configuration dictionary

@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../../src'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Global Village Python Utilities'
+project = 'Global Village Python Utilities and Documentation'
 copyright = '2020, Jonathan Gossage'
 author = 'Jonathan Gossage'
 
@@ -45,6 +45,17 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+rst_prolog = """
+.. |br| raw:: html
+
+   <br />
+   
+"""
+
+rst_epilog =  """
+.. _Python:  https://www.python.org/
+.. _JSON: https://www.json.org/json-en.html
+"""
 
 # -- Options for HTML output -------------------------------------------------
 

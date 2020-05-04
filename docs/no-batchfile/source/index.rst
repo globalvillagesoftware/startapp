@@ -1,5 +1,3 @@
-.. include:: /Infrastructure/templates/include/raw.txt
-
 Welcome to the StartupApp's documentation!
 ==============================================
 
