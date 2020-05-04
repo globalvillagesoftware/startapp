@@ -5,8 +5,6 @@ Welcome to the StartupApp's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   test
-
 Indices and tables
 ==================
 
