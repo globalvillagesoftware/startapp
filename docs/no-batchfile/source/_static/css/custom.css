@@ -1,17 +1,14 @@
-body {
+.body {
     background-color: #f7fad4;
     background: #f7fad4;
 }
 
-wy-body-for-nav {
+.wy-body-for-nav {
     background-color: #f7fad4;
 }
 
-footer {
+.gvfooter {
     background-color: #eff5a6;
     text-align: center;
-}
-
-btn-neutral {
-    background-color: red !important;
+    margin: auto
 }
