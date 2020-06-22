@@ -21,8 +21,8 @@ template = 'pydev.gv_start_template'
 def verifyModule(self):
 
     def verifyModule(self):
-        cfg = self._tp.cfg # Get the actual configuration
-        #TODO: startup_test - This test will run with simulated command line arguments and configuration files
+        cfg = self._tp.cfg # Get the actual configurationx
+        #TODO: startup_test - This test will run with simulated command line arguments and configurationx files
         cfg[_c.noargs] = True
         _C.insert(cfg.cmdargs)
         
@@ -30,28 +30,28 @@ def verifyModule(self):
         # code. This actually ran in the setup function since the template was
         # imported there.
         self.assertTrue(isinstance(cfg, dict),
-                        f'The configuration is not a dictionary - {type(cfg)}')
-        l = _C(cfg).len()  # Number of entries in the configuration
-        num = 8            # The expected number of entries in the configuration
+                        f'The configurationx is not a dictionary - {type(cfg)}')
+        l = _C(cfg).len()  # Number of entries in the configurationx
+        num = 8            # The expected number of entries in the configurationx
         self.assertEqual(l, num,
-            f'The configuration dictionary should have {num} item(s), has {l} '
+            f'The configurationx dictionary should have {num} item(s), has {l} '
              '\n    The entries are: {cfg}')
         #TODO: Cleanup and use the platform module to use this code
         """
         plid = cfg.plid  # The determined operating system
         plsys = 'linux'  # The expected operating system
         self.assertEqual(plid, plsys,
-            'The configuration dictionary should say running on {} - is {}'.\
+            'The configurationx dictionary should say running on {} - is {}'.\
                          format(plid, plsys))
         """
         self.assertIsNone(cfg[_c.uac],
 f'We should not have access to the user startup module yet - have {cfg[_c.uac]}')
 
 def verifyFunction(self):
-    num = 10         # The expected number of entries in the configuration
-    l = _C(self._tp.cfg).len()  # Number of entries in the configuration
+    num = 10         # The expected number of entries in the configurationx
+    l = _C(self._tp.cfg).len()  # Number of entries in the configurationx
     self.assertEqual(l, num,
-        f'The configuration dictionary should have {num} item(s), has {l} '
+        f'The configurationx dictionary should have {num} item(s), has {l} '
             '\n    The entries are: {cfg}')
 
 def reload(template):

@@ -1,52 +1,36 @@
 """
+Platform specific support
+
+This is an operating system dependent package. I will be deployed in an
+operating system dependent package that has the same name as is returned
+by platform.system(). One such package and module exists for every platform
+supported by this framework.
+
+It contains functions that are platform specific. Every platform specific
+package contains identically named functions. This allows the module to be
+imported like this:
+    `from linux import *`
+When this function succeeds, all the platform specific functions will have been
+imported and can be used directly without needing to consider that they are
+platform specific in their implementation.
+
 Created on Apr. 18, 2020
 
 @author: Jonathan Gossage
 """
+from getpass import getuser
 
-from typing import Dict, Text
-import platform
+import configuration as _c
 
 
-class Platform(object):
+def platformConfiguration():
     """
-    This class obtains the following platform information from the operating
-    system in a platform dependent manner:
-    
-    * platform type
-    * platform name
-    * platform version
-
-   The Linux platform is the only one currently supported.
-    
+This function will generate a dictionary containing entries whose values are
+determined in a platform specific manner. The key will be the name of the
+configuration entry and the value will be its value as discovered on the
+specific platform.
     """
 
-
-    # Keys naming the records in the platform_desc dictionary
-    MachineType = '0'
-    Processor   = '1'
-    Release     = '3'
-    System      = '4'
-    Version     = '5'
-
-    def __init__(self):
-        """
-        Constructor
-        
-        Some basic information is captured here including:
-        
-        * Machine type
-        * Processor - Specific processor model, not always available
-        * Release - Operating system release
-        """
-
-        self._platform_desc                       = {}
-        self._platform_desc[Platform.MachineType] = platform.machine()
-        self._platform_desc[Platform.Processor]   = platform.processor()
-        self._platform_desc[Platform.Release]     = platform.release()
-        self._platform_desc[Platform.System]      = platform.system()
-        self._platform_desc[Platform.Version]     = platform.version()
-
-    @property
-    def platform(self) -> Dict[Text, Text]:
-        return self._platform_desc
+    cfg = {}
+    cfg[_c.userid] = getuser()
+    return cfg
