@@ -53,13 +53,13 @@ from pathlib import Path
 # This assumes we want the configuration process. We default to wanting it
 # since the use of mock objects for configuration during testing can give us
 # control over the environment
-import configuration as _c  # Defines c as an abbreviation for
+import lib.configuration as _c  # Defines c as an abbreviation for
                                 # lib.configuration
-from configuration import Configuration as _C
+from lib.configuration import Configuration as _C
                                 # Defines _C as an abbreviation for
                                 # lib.configuration.Configuration
-import gvLogging as _l
-import gvLogging.Logging as _L
+import lib.gvLogging as _l
+import lib.gvLogging.Logging as _L
 
 
 cfg = {}        # The application configuration data
@@ -72,9 +72,10 @@ _l.Logging(cfg)
 # site based configuration files, as well as the command line arguments if
 # desired.
 _C(cfg)
+_C.set_member(_c.log, _L)  # Record the logging state in the configuration
 
 # Load the platform specific module
-_platform = platform.system
+_platform: Optional[str] = platform.system()
 _platform_module_name = 'platform_specific'
 
 _platform_module_path =\
@@ -84,17 +85,17 @@ if _platform is None:
 
     _L.error(f'We are running on a strange system. {sys.argv[0]}'
              ' does not understand the name of the operating system')
-    exit(1)
+    sys.exit(1)
 
 if not _platform_module_path.exists():
-    _L.error(f'Global Village does not support the'
-             ' operating system platform {_platform_module_path}')
+    _L.error('Global Village does not support the'
+             f' operating system platform {_platform_module_path}')
     exit(1)
 try:
-    import f'{_platform}.platform'
-except ImportError as e
-    _L.exception('Python cannot import {}'e)
-    exit(1)
+    importlib.import_module(f'lib.{_platform}.platform')
+except ImportError as e:
+    _L.exception(f'Python cannot import {e}')
+    sys.exit(1)
 
 
 _tf  = None     # Name of the configuration file to use for testing
@@ -109,7 +110,7 @@ in the configuration using the configuration key pname. Change this name to
 suit the application.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 """
-_C.insert(_c.pname, 'startupapp')
+_C.set_member(_c.pname, 'startupapp')
 
 __all__ = ['lib.configuration.Configuration']
 
@@ -141,18 +142,18 @@ supported.
 
 class gvError(Exception):
     """"Generic exception to raise and log different fatal errors."""
-    def __init__(self, msg):
+    def __init__(self, msg) -> None:
         super()
         self.msg = f'E: {msg}'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.msg
 
-    def __unicode__(self):
+    def __unicode__(self) -> str:
         return self.msg
 
 
-def main():
+def main() -> int:
     """The application agnostic startup controller"""
 
     try:
@@ -160,11 +161,11 @@ def main():
         _C(cfg)
         # Validate the configuration data
         # Validate that we are running on a supported platform
-        plsys = None
-        sa = cfg.get(_c.pname)
+        plsys: Optional[str] = None
+        sa: str = cfg.get(_c.pname)
         if sa is None:
             sa = 'StartupApp template'
-        p = sys.platform()
+        p: str = sys.platform()
         if p.startswith('win32'):
             raise(ValueError, f'{sa} - Windows is not supported yet')
         elif p.startswith('linux'):
@@ -177,7 +178,7 @@ def main():
         # arguments. This information is needed very early during program
         # execution so do it now.
         # Remember name of the operating system platform in the configuration
-        _C.insert(_C.get(cfg.plid), plsys)
+        _C.set_member(_C.get(cfg.plid), plsys)
         # Load the user's application specific high level class
         um = _C.get(_c.umname)
         upk = _C.get(_c.umpkg)
@@ -188,11 +189,12 @@ def main():
 
         # Stage 2 - Initialize gvLogging. Happens even if gvLogging not desired
 
-        _C.insert(cfg.log, __import__('lib.gvLogging', fromlist=('Logging')))
+        _C.set_member(cfg.log, __import__('lib.gvLogging',
+                                          fromlist=('Logging')))
         _C.get(_c.log)()  # Initialize the gvLogging
 
         # Gives the program name
-        _C.insert(_c.pname, os.path.basename(sys.argv[0]))
+        _C.set_member(_c.pname, os.path.basename(sys.argv[0]))
 
         # If we got a command line argument specifying the name of the config
         # file to use for the test run use it if dynamic configuration is not
@@ -220,7 +222,7 @@ tolerates the lack of a startup method.
                     return _ret     # If we did not start cleanly, no point in
                                     # continuing
             else:
-                _L.logger.error('The application module was not supplied in the configuration')
+                _L.error('The application module {} was not supplied in the configuration')
                 return 1                #
         except ImportError:     # It's OK if the application startup method is
                                 # not there
@@ -271,7 +273,7 @@ lack of a shutdown method.
 
 # Note that this code runs before the start of the main-line.
 if __name__ == '__main__':
-    c = cfg.get(cfg.debug)
+    c: Optional[bool] = cfg.get(cfg.debug)
     if c is not None and not c:
         sys.argv.append('-vvv')
 
