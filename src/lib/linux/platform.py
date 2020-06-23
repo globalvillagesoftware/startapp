@@ -106,19 +106,19 @@ intensive because it loads the entire password file and uses regular
 expressions to examine the content of the file.
 
 The file is made up of records, one for each user recorded in the file and
-a is contained in a physical line.
+a record is contained in a physical line.
 
 Record processing has two stages. In the first stage, we determine if this
 is a record of interest. In the second stage, we process the record. This
-second level processing only takes place only when we have identified that a
-record is of interest.
+second level processing takes place only when we have identified that a record
+is of interest.
 
 This suggests that we should get overlap in our processing in the following
 way:
 
 * Read records asynchronously, line by line.
-* As a line becomes available,pass it to a pool of processors running in a pool
-  as multiprocessing tasks.
+* As a line becomes available, pass it to a pool of processors running in a
+  pool as multiprocessing tasks.
 * Since each pool member runs asynchronously on a  separate processor core, we
   can get strong overlap because the first stage of record processing, for each
   record, can run overlapping the time for reading records and the time for
