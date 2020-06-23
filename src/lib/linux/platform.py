@@ -113,7 +113,8 @@ is a record of interest. In the second stage, we process the record. This
 second level processing only takes place only when we have identified that a
 record is of interest.
 
-This suggests that we should get overlap in our processing in the following way:
+This suggests that we should get overlap in our processing in the following
+way:
 
 * Read records asynchronously, line by line.
 * As a line becomes available,pass it to a pool of processors running in a pool
