@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse-pydev version="1.0"?><pydev_project>
-                                            
+                                                
+    
     
     
     
@@ -14,8 +15,10 @@
         <path>/${PROJECT_DIR_NAME}</path>
         <path>/${PROJECT_DIR_NAME}/src/lib</path>
         <path>${Infrastructure}</path>
+        <path>/${PROJECT_DIR_NAME}/Tests</path>
     </pydev_pathproperty>
-                                            
+                                                
+    
     
     
     
@@ -26,7 +29,8 @@
     
     
     <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python interpreter</pydev_property>
-                                            
+                                                
+    
     
     
     
@@ -37,28 +41,33 @@
     
     
     <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
-                                        
+                                            
 
 
 
 
 
+    
     
     
     
     
     <pydev_variables_property name="org.python.pydev.PROJECT_VARIABLE_SUBSTITUTION">
-                        
+                                
+        
         
         <key>Infrastructure</key>
-                        
+                                
+        
         
         <value>Infrastructure</value>
-                    
+                            
+    
     
     </pydev_variables_property>
-                
+                    
     
+
 
 
 

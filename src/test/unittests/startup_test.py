@@ -3,7 +3,7 @@ Created on Apr. 30, 2020
 
 @author: Jonathan Gossage
 
-This script provides unit tests that validate the template
+This script provides unit testLogging that validate the template
 `global_village_start.py`. Part of the code in the template runs at module
  level. This code will be checked by importing the module that contains the
  template script.
@@ -103,7 +103,7 @@ class TestFunction(unittest.TestCase):
         # The next step is to run the main() function
         self._tp.main()
 
-        # Run unit tests on the result of running the main startup function
+        # Run unit testLogging on the result of running the main startup function
         verifyFunction(self)
 
 if __name__ == '__main__':
