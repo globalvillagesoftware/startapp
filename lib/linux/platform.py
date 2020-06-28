@@ -1,5 +1,5 @@
 """
-Platform specific support
+*Linux* platform specific support for capturing environmental information
 
 This is an operating system dependent module. It will be deployed in an
 operating system dependent package that has the same name as is returned
@@ -14,9 +14,13 @@ When this function succeeds, all the platform specific functions will have been
 imported and can be used directly without needing to consider that they are
 platform specific in their implementation.
 
-Created on Apr. 18, 2020
+.. only:: development_administrator
 
-@author: Jonathan Gossage
+    Module management
+    
+    Created on Apr. 18, 2020
+    
+    @author: Jonathan Gossage
 """
 from pathlib import Path
 from getpass import getuser

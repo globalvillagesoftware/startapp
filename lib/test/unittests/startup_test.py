@@ -1,12 +1,18 @@
 """
-Created on Apr. 30, 2020
-
-@author: Jonathan Gossage
+Test the application startup template
 
 This script provides unit testLogging that validate the template
 `global_village_start.py`. Part of the code in the template runs at module
- level. This code will be checked by importing the module that contains the
- template script.
+level. This code will be checked by importing the module that contains the
+template script.
+
+.. only:: development_administrator
+
+    Module management
+    
+    Created on Apr. 30, 2020
+    
+    @author: Jonathan Gossage
 """
 
 import importlib

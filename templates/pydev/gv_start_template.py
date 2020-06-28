@@ -28,19 +28,23 @@ This code can be used in two ways:
 >>> Insert application specific documentation here. <<<
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-${module} -- ${shortdesc}
+.. only:: development_administrator
 
-${module} is a ${description}
-
-
-@author:     ${user_name}
-
-@copyright:  © ${year} ${organization_name}. All rights reserved.
-
-@license:    ${license}
-
-@contact:    ${user_email}
-@deffield    updated: Updated
+    Module management
+    
+    ${module} -- ${shortdesc}
+    
+    ${module} is a ${description}
+    
+    
+    @author:     ${user_name}
+    
+    @copyright:  © ${year} ${organization_name}. All rights reserved.
+    
+    @license:    ${license}
+    
+    @contact:    ${user_email}
+    @deffield    updated: Updated
 """
 
 import sys

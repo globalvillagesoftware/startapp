@@ -1,9 +1,13 @@
 """
 Tests the functionality of the Linux Platform support.
 
-Created on Jun. 22, 2020
+.. only:: development_administrator
 
-@author: Jonathan Gossage
+    Module management
+    
+    Created on Jun. 22, 2020
+    
+    @author: Jonathan Gossage
 """
 
 import os
