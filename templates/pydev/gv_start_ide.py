@@ -6,8 +6,8 @@
 >>> The module description follows here. <<<
 
 This is based on code written by Fabio Zadrozny as a template in the `Pydev`
-plugin for Eclipse. It provides the basic code that you need to start and run an
-application.
+plugin for Eclipse. It provides the basic code that you need to start and run
+an application.
 
 There are four main stages in the startup process:
 
@@ -39,7 +39,7 @@ This code can be used in two ways:
     
     @author:     ${user_name}
     
-    @copyright:  © ${year} ${organization_name}. All rights reserved.
+    @copyright:  © 2020 Global Village. All rights reserved.
     
     @license:    ${license}
     
@@ -53,42 +53,41 @@ import importlib
 import platform
 
 from pathlib import Path
+from typing import Callable, Dict, Optional
 
 # This assumes we want the configuration process. We default to wanting it
 # since the use of mock objects for configuration during testing can give us
 # control over the environment
 import lib.configuration as _c  # Defines c as an abbreviation for
                                 # lib.configuration
-from lib.configuration import Configuration as _C
-                                # Defines _C as an abbreviation for
-                                # lib.configuration.Configuration
 import lib.gvLogging as _l
-import lib.gvLogging.Logging as _L
 
 
-cfg = {}        # The application configuration data
+cfg: Dict[str, _c.CfgEntry] = {}        # The application configuration data
 
 # Initialize gvLogging
-_l.Logging(cfg)
+_L = _l.Logging(cfg)
 
 # The module level code in the configuration module was run during import
 # Initialize the Configuration class. This will acquire disk file or remote
 # site based configuration files, as well as the command line arguments if
 # desired.
-_C(cfg)
-_C.set_member(_c.log, _L)  # Record the logging state in the configuration
+_C = _c.Configuration(cfg)
+# Record the logging state in the configuration
+_C.set_member(_c.log,
+              _L)
 
 # Load the platform specific module
 _platform: Optional[str] = platform.system()
-_platform_module_name = 'platform_specific'
-
-_platform_module_path =\
-    Path(Path(sys.argv[0]).parent / _platform)
+_platform_module_name = 'platform.py'
+_platform_module_path = Path(sys.argv[0]).resolve()
+_platform_module_path = Path(_platform_module_path.parent / _platform)
 err = 0
 if _platform is None:
 
-    _L.error(f'We are running on a strange system. {sys.argv[0]}'
-             ' does not understand the name of the operating system')
+    _L.error('We are running on a strange system.'
+             f' {sys.argv[0]} does not understand the name'
+             ' of the operating system')
     sys.exit(1)
 
 if not _platform_module_path.exists():
@@ -114,7 +113,8 @@ in the configuration using the configuration key pname. Change this name to
 suit the application.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 """
-_C.set_member(_c.pname, 'startupapp')
+_C.set_member(_c.pname,
+              'startupapp')
 
 __all__ = ['lib.configuration.Configuration']
 
@@ -161,8 +161,7 @@ def main() -> int:
     """The application agnostic startup controller"""
 
     try:
-        # Stage 1 - Get the application configuration
-        _C(cfg)
+        # Stage 1
         # Validate the configuration data
         # Validate that we are running on a supported platform
         plsys: Optional[str] = None
@@ -178,27 +177,25 @@ def main() -> int:
             # Platform is unsupported
             raise(ValueError, f'{sa} - {plsys} is an unsupported platform')
 
-        # Collect all the configuration data including the command line
-        # arguments. This information is needed very early during program
-        # execution so do it now.
-        # Remember name of the operating system platform in the configuration
-        _C.set_member(_C.get(cfg.plid), plsys)
         # Load the user's application specific high level class
         um = _C.get(_c.umname)
         upk = _C.get(_c.umpkg)
         upc = _C.get(_c.umclass)
         if um and upk and upc:
             # from upk import um.uc as _uac
-            _uac = importlib.import_module(um, upk).upc
+            _uac = importlib.import_module(um,
+                                           upk).upc
 
         # Stage 2 - Initialize gvLogging. Happens even if gvLogging not desired
 
-        _C.set_member(cfg.log, __import__('lib.gvLogging',
-                                          fromlist=('Logging')))
+        _C.set_member(cfg.log,
+                       __import__('lib.gvLogging',
+                                  fromlist=('Logging')))
         _C.get(_c.log)()  # Initialize the gvLogging
 
         # Gives the program name
-        _C.set_member(_c.pname, os.path.basename(sys.argv[0]))
+        _C.set_member(_c.pname,
+                      os.path.basename(sys.argv[0]))
 
         # If we got a command line argument specifying the name of the config
         # file to use for the test run use it if dynamic configuration is not
@@ -219,32 +216,36 @@ to be called `startup`. Change the method name if needed. `startupApp`
 tolerates the lack of a startup method.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         """
-        try:
-            if _uac is not None:
+        if _uac:
+            if not isinstance(_uac,
+                               Callable):
+                raise(ValueError('The user application specific'
+                                 ' class must be callable'))
+            if 'startup' in _uac:
                 _ret = _uac.startup()
                 if _ret > 0:
-                    return _ret     # If we did not start cleanly, no point in
-                                    # continuing
+                    raise(AssertionError('Application startup failed with'
+                                         f' return code {_ret}'))
             else:
-                _L.error('The application module {} was not supplied in the configuration')
-                return 1                #
-        except ImportError:     # It's OK if the application startup method is
-                                # not there
-            pass
-        # all other exceptions are handled by the normal shutdown code
-
-        """
+                """
 Run the user's application. This loads the application specific code that
 contains a callable class and invokes it. The Global Village environment
 expects that the application specific class takes the configuration as
 a parameter and that it contains a callable method that runs the application.
-        """
-        # The first step imports the user's module
-        # The second step creates an instance of the user's module
-        # The third step invokes the user's module as a callable
-        _ret = _uac()
-        if _ret > 0:
-            return _ret
+            """
+            # The first step imports the user's module
+            # The second step creates an instance of the user's module
+            # The third step invokes the user's module as a callable
+            _ret = max(_uac(),
+                   _ret)
+                
+            if _ret > 0:
+                raise(AssertionError('The application failed with return'
+                                     f' code {_ret}'))
+        else:
+            raise ValueError(f'The application module {_uac} was not'
+                             ' supplied in the configuration')
+
 
         # Stage 4 Application completed - Do application cleanup
 
@@ -256,11 +257,12 @@ called `shutdown`. Change the method name if needed. `startupApp` tolerates the
 lack of a shutdown method.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         """
-        try:
-            _ret = _uac.shutdown()
-        except ImportError:  # It is OK if the application is not working
-            pass
-        # all other exceptions are handled by the normal shutdown code
+        if _uac and 'shutdown' in _uac:
+            _ret = max(_uac.shutdown(),
+                       _ret)
+            if _ret > 0:
+                raise(AssertionError('Application failed during shutdown with'
+                                     f' return code {_ret}'))
         return _ret  # The application finished normally
 
     except KeyboardInterrupt:
@@ -269,25 +271,23 @@ lack of a shutdown method.
 
     # This is the normal exception handler. It simply logs the exception
     except Exception as e:
-        if _C.get(cfg.debug) or _C.get(cfg.testrun):
+        _L.exception('Got an exception: - ')
+        if cfg.get(_c.debug) or cfg.get(_c.testrun):
             raise(e)
-        _C.log = e  # Log the error
-        return 2
+        else:
+            sys.exit(2)
 
 
 # Note that this code runs before the start of the main-line.
 if __name__ == '__main__':
-    c: Optional[bool] = cfg.get(cfg.debug)
-    if c is not None and not c:
+    if cfg.get(cfg.debug):
         sys.argv.append('-vvv')
 
-    c = cfg.get(cfg.testrun)
-    if c is not None and not c:
+    if cfg.get(cfg.testrun):
         import doctest
         doctest.testmod()
 
-    c = cfg.get(cfg.profile)
-    if c is not None and not c:
+    if cfg.get(cfg.profile):
         import cProfile
         import pstats
         profile_filename = '${module}_profile.txt'

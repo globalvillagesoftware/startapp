@@ -25,11 +25,12 @@ platform specific in their implementation.
 from pathlib import Path
 from getpass import getuser
 import re
+# from typing import MutableMapping, Any
 from typing import MutableMapping, Any
-
 import lib.configuration as _c
-from _c import Configuration as _C
-from lib.gvLogging import Logging as _L
+# from _c import Configuration as _C
+import lib.configuration.Configuration as _C
+import lib.gvLogging.Logging as _L
 
 __ALL__ = ['platformConfiguration']
 
@@ -43,7 +44,7 @@ specific platform.
     """
 
     # Set the current user
-    cfg: dict[str: Any] = {}
+    cfg: dict[str: typing.Any] = {}
     cfg[_c.userid] = getuser()
 
     # Set the full name of the current user plus the UID and GID for the user
@@ -79,7 +80,7 @@ specific platform.
 
     if match:
         cfg_keys = ('', '_c_uid', '_c_gid', '_c_username')
-        cfg_cvt = (None, int. int, str)
+#        cfg_cvt = (None, int. int, str)
         grp = match.groups()
         for i, g in enumerate(grp,
                               start=1):
@@ -102,7 +103,7 @@ specific platform.
     return cfg  # Return the data that we have captured
 
 
-def get_user_name(cfg):
+def get_user_name(cfg) -> str:
     """
 Although this function is logically a small part of the total picture of
 creating the environment for an application invocation, it is highly CPU
@@ -137,3 +138,4 @@ way:
   in definable chunks from asynchronous sources and must be processed, a very
   common situation.
     """
+    pass
