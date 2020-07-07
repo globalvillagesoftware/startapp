@@ -58,24 +58,21 @@ from typing import Callable, Dict, Optional
 # This assumes we want the configuration process. We default to wanting it
 # since the use of mock objects for configuration during testing can give us
 # control over the environment
-import lib.configuration as _c  # Defines c as an abbreviation for
-                                # lib.configuration
+import lib.configuration as _c
 import lib.gvLogging as _l
 
 
-cfg: Dict[str, _c.CfgEntry] = {}        # The application configuration data
-
-# Initialize gvLogging
-_L = _l.Logging(cfg)
+_L = _l.setLogging()
 
 # The module level code in the configuration module was run during import
-# Initialize the Configuration class. This will acquire disk file or remote
+# Initialize the Configuration class. This will acquire disk files or remote
 # site based configuration files, as well as the command line arguments if
 # desired.
-_C = _c.Configuration(cfg)
+_C: 'Configuration' = _c.Configuration()
+_L: 'Logging' = _l.initializeLogging()
 # Record the logging state in the configuration
-_C.set_member(_c.log,
-              _L)
+_C.setMember(_c.log,
+             _L)
 
 # Load the platform specific module
 _platform: Optional[str] = platform.system()
@@ -91,9 +88,10 @@ if _platform is None:
     sys.exit(1)
 
 if not _platform_module_path.exists():
-    _L.error('Global Village does not support the'
-             f' operating system platform {_platform_module_path}')
-    exit(1)
+    msg = 'Global Village cannot find the operating system specific'\
+          f' module {_platform_module_path} for the {_platform} platform'
+    _L.error(msg)
+    sys.exit(1)
 try:
     importlib.import_module(f'lib.{_platform}.platform')
 except ImportError as e:
@@ -165,7 +163,7 @@ def main() -> int:
         # Validate the configuration data
         # Validate that we are running on a supported platform
         plsys: Optional[str] = None
-        sa: str = cfg.get(_c.pname)
+        sa: str = _C.get(_c.pname)
         if sa is None:
             sa = 'StartupApp template'
         p: str = sys.platform()
@@ -181,6 +179,7 @@ def main() -> int:
         um = _C.get(_c.umname)
         upk = _C.get(_c.umpkg)
         upc = _C.get(_c.umclass)
+        _uac: Optional[Callable] = None
         if um and upk and upc:
             # from upk import um.uc as _uac
             _uac = importlib.import_module(um,
@@ -188,7 +187,7 @@ def main() -> int:
 
         # Stage 2 - Initialize gvLogging. Happens even if gvLogging not desired
 
-        _C.set_member(cfg.log,
+        _C.set_member(_C.log,
                        __import__('lib.gvLogging',
                                   fromlist=('Logging')))
         _C.get(_c.log)()  # Initialize the gvLogging
@@ -221,6 +220,7 @@ tolerates the lack of a startup method.
                                Callable):
                 raise(ValueError('The user application specific'
                                  ' class must be callable'))
+            
             if 'startup' in _uac:
                 _ret = _uac.startup()
                 if _ret > 0:
@@ -272,7 +272,7 @@ lack of a shutdown method.
     # This is the normal exception handler. It simply logs the exception
     except Exception as e:
         _L.exception('Got an exception: - ')
-        if cfg.get(_c.debug) or cfg.get(_c.testrun):
+        if _C.get(_c.debug) or _C.get(_c.testrun):
             raise(e)
         else:
             sys.exit(2)
@@ -280,14 +280,14 @@ lack of a shutdown method.
 
 # Note that this code runs before the start of the main-line.
 if __name__ == '__main__':
-    if cfg.get(cfg.debug):
+    if _C.get(_C.debug):
         sys.argv.append('-vvv')
 
-    if cfg.get(cfg.testrun):
+    if _C.get(_C.testrun):
         import doctest
         doctest.testmod()
 
-    if cfg.get(cfg.profile):
+    if _C.get(_C.profile):
         import cProfile
         import pstats
         profile_filename = '${module}_profile.txt'

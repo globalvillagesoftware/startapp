@@ -6,14 +6,15 @@ Created on Jul. 6, 2020
 @author: Jonathan Gossage
 """
 
-import os
 import sys
 import unittest
 
-print(f'Current CWD is: {os.getcwd()}')
-sys.path.insert(0, '/home/jgossage/GlobalVillage/EclipseWorkspaces/Library')
-sys.path.insert(1, '/home/jgossage/GlobalVillage/EclipseWorkspaces/StartupApp/templates')
-print(f'PYTHONPATH is {sys.path}')
+# Setup the PYTHONPATH for this run
+sys.path.insert(0,
+                '/home/jgossage/GlobalVillage/EclipseWorkspaces/Library')
+sys.path.insert(1,
+                '/home/jgossage/GlobalVillage/EclipseWorkspaces/'
+                'StartupApp/templates')
 from pydev import gv_start_ide as ide
 
 
