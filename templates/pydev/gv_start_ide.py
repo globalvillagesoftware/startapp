@@ -50,57 +50,32 @@ This code can be used in two ways:
 import sys
 import os
 import importlib
-import platform
+from typing import Callable, Optional
 
-from pathlib import Path
-from typing import Callable, Dict, Optional
+print(f'In start of template - {sys.path}')
 
-# This assumes we want the configuration process. We default to wanting it
-# since the use of mock objects for configuration during testing can give us
-# control over the environment
 import lib.configuration as _c
+_C = _c.Configuration
 import lib.gvLogging as _l
+_L = _l.Logging
+_l.setLogging()  # Setup the Global Village logger, if not already done
 
 
-_L = _l.setLogging()
 
 # The module level code in the configuration module was run during import
 # Initialize the Configuration class. This will acquire disk files or remote
 # site based configuration files, as well as the command line arguments if
 # desired.
-_C: 'Configuration' = _c.Configuration()
-_L: 'Logging' = _l.initializeLogging()
+_C = _C()  # Initialize the local configuration
+# Initializes the site logger if not already done and fully configures the
+# Global Village logger if necessary.
 # Record the logging state in the configuration
+_L = _l.initializeLogging()
 _C.setMember(_c.log,
              _L)
 
-# Load the platform specific module
-_platform: Optional[str] = platform.system()
-_platform_module_name = 'platform.py'
-_platform_module_path = Path(sys.argv[0]).resolve()
-_platform_module_path = Path(_platform_module_path.parent / _platform)
-err = 0
-if _platform is None:
 
-    _L.error('We are running on a strange system.'
-             f' {sys.argv[0]} does not understand the name'
-             ' of the operating system')
-    sys.exit(1)
-
-if not _platform_module_path.exists():
-    msg = 'Global Village cannot find the operating system specific'\
-          f' module {_platform_module_path} for the {_platform} platform'
-    _L.error(msg)
-    sys.exit(1)
-try:
-    importlib.import_module(f'lib.{_platform}.platform')
-except ImportError as e:
-    _L.exception(f'Python cannot import {e}')
-    sys.exit(1)
-
-
-_tf  = None     # Name of the configuration file to use for testing
-_ret = 0        # Default return code
+__ret = 0        # Default return code
 
 """
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -111,35 +86,10 @@ in the configuration using the configuration key pname. Change this name to
 suit the application.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 """
-_C.set_member(_c.pname,
-              'startupapp')
+_C.setMember(_c.pname,
+             'startupapp')
 
-__all__ = ['lib.configuration.Configuration']
-
-
-__sources__ = {}
-"""
->>> The sources where configuration information can be obtained. <<<
-
-Each dictionary element can be an instance of the class configLoader that can
-load configuration data for a specific group within an organization. It can
-also be a dictionary of sources that are considered to be lower in the
-organization hierarchy.
-
-The key of each element should be the name of the organization group. The top
-level entry in a hierarchy can use the organization name as a key.
-
-The value for each configuration item is a tuple. The first member of the
-tuple is the actual value of the configuration item. The second is a set of
-flags that are mostly organization specific and are intended to define how the
-configuration item can be used. These include a global flag that controls
-whether lower level groups within an organization hierarchy can override the
-value of the specific configuration item. If the value is a dictionary then it
-contains a set of lower level organization definitions.
-
-This dictionary is originally empty so no sources for configuration data are
-supported.
-"""
+__all__ = []
 
 
 class gvError(Exception):
@@ -166,7 +116,7 @@ def main() -> int:
         sa: str = _C.get(_c.pname)
         if sa is None:
             sa = 'StartupApp template'
-        p: str = sys.platform()
+        p: str = sys.platform
         if p.startswith('win32'):
             raise(ValueError, f'{sa} - Windows is not supported yet')
         elif p.startswith('linux'):
@@ -185,16 +135,9 @@ def main() -> int:
             _uac = importlib.import_module(um,
                                            upk).upc
 
-        # Stage 2 - Initialize gvLogging. Happens even if gvLogging not desired
-
-        _C.set_member(_C.log,
-                       __import__('lib.gvLogging',
-                                  fromlist=('Logging')))
-        _C.get(_c.log)()  # Initialize the gvLogging
-
         # Gives the program name
-        _C.set_member(_c.pname,
-                      os.path.basename(sys.argv[0]))
+        _C.setMember(_c.pname,
+                     os.path.basename(sys.argv[0]))
 
         # If we got a command line argument specifying the name of the config
         # file to use for the test run use it if dynamic configuration is not
@@ -280,14 +223,14 @@ lack of a shutdown method.
 
 # Note that this code runs before the start of the main-line.
 if __name__ == '__main__':
-    if _C.get(_C.debug):
+    if _C.get(_c.debug):
         sys.argv.append('-vvv')
 
-    if _C.get(_C.testrun):
+    if _C.get(_c.testrun):
         import doctest
         doctest.testmod()
 
-    if _C.get(_C.profile):
+    if _C.get(_c.profile):
         import cProfile
         import pstats
         profile_filename = '${module}_profile.txt'

@@ -15,6 +15,8 @@ sys.path.insert(0,
 sys.path.insert(1,
                 '/home/jgossage/GlobalVillage/EclipseWorkspaces/'
                 'StartupApp/templates')
+sys.path.insert(2,
+                '/home/jgossage/GlobalVillage/EclipseWorkspaces/StartupApp')
 from pydev import gv_start_ide as ide
 
 
